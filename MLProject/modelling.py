@@ -18,7 +18,7 @@ def load_data(file_path):
         sys.exit(1)
 
 def main():
-    DATA_PATH = "../Workflow-CI/MLProject/PCOS_preprocessing.csv"
+    DATA_PATH = "../MLProject/PCOS_preprocessing.csv"
     
     print("Memuat data...")
     data = load_data(DATA_PATH)
