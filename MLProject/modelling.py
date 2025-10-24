@@ -8,13 +8,8 @@ import sys
 import warnings
 import joblib
 import os
-import dagshub
 
 warnings.filterwarnings('ignore')
-
-dagshub.init(repo_owner='bisat19',
-             repo_name='Membangun_model',
-             mlflow=True)
 
 def load_data(file_path):
     """Memuat data dari path yang benar."""
