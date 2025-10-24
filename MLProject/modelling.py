@@ -7,6 +7,7 @@ from sklearn.metrics import accuracy_score
 import sys
 import warnings
 import joblib
+import mlflow.sklearn
 import os
 
 warnings.filterwarnings('ignore')
@@ -62,7 +63,10 @@ def main():
         model_filename = "model.pkl"
         joblib.dump(model, model_filename)
 
-        mlflow.log_artifact(model_filename, artifact_path="model") 
+        mlflow.sklearn.log_model(
+            sk_model=model,
+            artifact_path="model" 
+        ) 
 
         os.remove(model_filename)
         
