@@ -62,10 +62,10 @@ def main():
         print("Menyimpan dan logging model dalam format MLflow...")
 
         mlflow.sklearn.log_model(
-            sk_model=model,
-            artifact_path="model" 
-        ) 
-        
+        sk_model=model,
+        artifact_path="model"  
+        )
+            
         print("Pelatihan CI selesai. Artefak di-log secara manual.")
 
         run_id = run.info.run_id
