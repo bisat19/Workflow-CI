@@ -59,16 +59,12 @@ def main():
         mlflow.log_params(params)
         mlflow.log_metric("accuracy", accuracy)
         
-        print("Menyimpan dan logging artefak model secara manual...")
-        model_filename = "model.pkl"
-        joblib.dump(model, model_filename)
+        print("Menyimpan dan logging model dalam format MLflow...")
 
         mlflow.sklearn.log_model(
             sk_model=model,
             artifact_path="model" 
         ) 
-
-        os.remove(model_filename)
         
         print("Pelatihan CI selesai. Artefak di-log secara manual.")
 
