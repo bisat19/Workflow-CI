@@ -22,7 +22,7 @@ def load_data(file_path):
 
 def main():
     # Path ini sudah benar (relatif dari folder MLProject)
-    DATA_PATH = "../namadataset_preprocessing/PCOS_preprocessing.csv"
+    DATA_PATH = "../MLProject/PCOS_preprocessing.csv"
     
     print("Memuat data...")
     data = load_data(DATA_PATH)
