@@ -11,15 +11,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # Siapkan environment Conda
       - name: Set up Conda Environment
         uses: conda-incubator/setup-miniconda@v2
         with:
           auto-activate-base: false
+          
+          activate-environment: workflow-ci
+          
           environment-file: MLProject/conda.yaml
           python-version: '3.10'
           
+      # Jalankan MLflow Project
       - name: Run MLflow Project
-        shell: bash -l {0}
+        shell: bash -l {0} 
         run: |
-          conda activate workflow-ci
+          
           mlflow run MLProject
