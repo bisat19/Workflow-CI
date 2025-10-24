@@ -1,0 +1,25 @@
+name: 3. CI Model Training
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  train:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Conda Environment
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          auto-activate-base: false
+          environment-file: MLProject/conda.yaml
+          python-version: '3.10'
+          
+      - name: Run MLflow Project
+        shell: bash -l {0}
+        run: |
+          conda activate workflow-ci
+          mlflow run MLProject
