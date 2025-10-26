@@ -1,5 +1,5 @@
 name: Workflow-CI-PCOS
-conda_env: conda.yaml
+# conda_env: conda.yaml
 
 entry_points:
   main:
