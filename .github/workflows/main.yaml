@@ -52,10 +52,6 @@ jobs:
           echo "Akan membuat dan push image dengan nama: $IMAGE_NAME"
 
           echo "--- Membangun Docker Image (MLflow Models) ---"
-          #
-          # --- PERBAIKAN DI SINI ---
-          # Kita paksa menggunakan 'conda' agar sesuai dengan MLmodel kita
-          #
           mlflow models build-docker -m "$MODEL_URI" -n "$IMAGE_NAME" --enable-mlserver --env-manager=conda
 
           echo "--- Mendorong (Push) Docker Image ke Docker Hub ---"
