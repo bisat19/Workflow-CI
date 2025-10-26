@@ -32,8 +32,8 @@ jobs:
         run: |
           # Jalankan proyek di direktori saat ini ('.')
           # Ini akan menggunakan environment 'workflow-ci' yang sudah aktif
-          mlflow run .
-
+          mlflow run . --env-manager local
+          
       - name: Build and Push Docker Image
         shell: bash -l {0}
         env:
