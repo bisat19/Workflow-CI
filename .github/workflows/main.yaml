@@ -19,7 +19,7 @@ jobs:
           
           activate-environment: workflow-ci
           
-          environment-file: MLProject/conda.yaml
+          environment-file: conda.yaml
           python-version: '3.10'
           
       # Jalankan MLflow Project
