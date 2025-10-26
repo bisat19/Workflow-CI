@@ -7,8 +7,9 @@ from sklearn.metrics import accuracy_score
 import sys
 import warnings
 import joblib
-import mlflow.sklearn
 import os
+import yaml 
+import sklearn 
 
 warnings.filterwarnings('ignore')
 
@@ -22,7 +23,6 @@ def load_data(file_path):
         sys.exit(1)
 
 def main():
-    # Path ini sudah benar (relatif dari folder MLProject)
     DATA_PATH = "../MLProject/PCOS_preprocessing.csv"
     
     print("Memuat data...")
@@ -44,7 +44,7 @@ def main():
     }
     model = RandomForestClassifier(**params)
 
-    with mlflow.start_run(run_name="CI_Training_Run") as run:
+    with mlflow.start_run(run_name="CI_Training_Run_Manual") as run:
         print(f"Memulai run: {run.info.run_id}")
         
         print("Melatih model...")
@@ -55,18 +55,54 @@ def main():
         
         print(f"  Accuracy: {accuracy:.4f}")
 
-        print("Logging parameter dan metrik secara manual...")
+        print("Logging parameter dan metrik...")
         mlflow.log_params(params)
         mlflow.log_metric("accuracy", accuracy)
         
-        print("Menyimpan dan logging model dalam format MLflow...")
+        print("Membuat artefak model (MLmodel & .pkl) secara manual...")
 
-        mlflow.sklearn.log_model(
-        sk_model=model,
-        artifact_path="model"  
-        )
-            
-        print("Pelatihan CI selesai. Artefak di-log secara manual.")
+        # 1. Tentukan direktori sementara untuk artefak
+        model_artifact_dir = "model_artifact_temp"
+        if not os.path.exists(model_artifact_dir):
+            os.makedirs(model_artifact_dir)
+
+        # 2. Simpan model.pkl di dalam direktori
+        model_path = os.path.join(model_artifact_dir, "model.pkl")
+        joblib.dump(model, model_path)
+
+        # 3. Buat file MLmodel secara manual
+        sklearn_version = sklearn.__version__
+        conda_env_path = "../conda.yaml"
+        python_version = "3.12.1" 
+
+        # Konten untuk file MLmodel
+        mlmodel_dict = {
+            'flavors': {
+                'python_function': {
+                    'env': {'conda': conda_env_path},
+                    'loader_module': 'mlflow.sklearn',
+                    'model_path': 'model.pkl',
+                    'python_version': python_version
+                },
+                'sklearn': {
+                    'pickled_model': 'model.pkl',
+                    'serialization_format': 'cloudpickle',
+                    'sklearn_version': sklearn_version
+                }
+            },
+            'run_id': run.info.run_id,
+            'utc_time_created': pd.Timestamp.utcnow().isoformat() + "Z"
+        }
+        
+        # Tulis file MLmodel ke direktori
+        mlmodel_path = os.path.join(model_artifact_dir, "MLmodel")
+        with open(mlmodel_path, 'w') as f:
+            yaml.dump(mlmodel_dict, f, default_flow_style=False)
+
+        # 4. Log SELURUH DIREKTORI sebagai artefak
+        mlflow.log_artifacts(model_artifact_dir, artifact_path="model")
+
+        print("Artefak model manual berhasil di-log ke 'model'.")
 
         run_id = run.info.run_id
         with open("../run_id.txt", "w") as f:
@@ -74,4 +110,10 @@ def main():
         print(f"Menyimpan Run ID: {run_id}")
 
 if __name__ == "__main__":
+    try:
+        import yaml
+    except ImportError:
+        print("Error: 'pyyaml' tidak terinstal. Harap tambahkan ke conda.yaml.", file=sys.stderr)
+        sys.exit(1)
+        
     main()

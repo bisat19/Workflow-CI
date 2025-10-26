@@ -1,9 +1,13 @@
 name: workflow-ci
 channels:
   - conda-forge
+  - defaults
 dependencies:
-  - python=3.10
+  - python=3.12.1
   - pip
-  - pandas
-  - scikit-learn
-  - mlflow
+  - pip:
+    - mlflow==3.5.1 
+    - dagshub==0.6.3
+    - pandas
+    - scikit-learn
+    - pyyaml  
