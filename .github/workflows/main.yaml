@@ -16,23 +16,23 @@ jobs:
         uses: conda-incubator/setup-miniconda@v2
         with:
           auto-activate-base: false
-          
           activate-environment: workflow-ci
-          
-          environment-file: conda.yaml
+          environment-file: conda.yaml 
           python-version: '3.10'
           
       # Jalankan MLflow Project
       - name: Run MLflow Project
         shell: bash -l {0} 
-        
         env:
           MLFLOW_TRACKING_URI: ${{ secrets.DAGSHUB_TRACKING_URI }}
           MLFLOW_TRACKING_USERNAME: ${{ secrets.DAGSHUB_USERNAME }}
           MLFLOW_TRACKING_PASSWORD: ${{ secrets.DAGSHUB_PASSWORD }}
-          
+        # Pindah ke direktori proyek
+        working-directory: ./MLProject 
         run: |
-          mlflow run MLProject . --no-conda
+          # Jalankan proyek di direktori saat ini ('.')
+          # Ini akan menggunakan environment 'workflow-ci' yang sudah aktif
+          mlflow run .
 
       - name: Build and Push Docker Image
         shell: bash -l {0}
@@ -46,7 +46,8 @@ jobs:
           echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
 
           echo "--- Reading Run ID ---"
-          export LATEST_RUN_ID=$(cat run_id.txt)
+          # modelling.py menyimpan ini di root (../)
+          export LATEST_RUN_ID=$(cat run_id.txt) 
           echo "Menggunakan Run ID: $LATEST_RUN_ID"
           export MODEL_URI="runs:/$LATEST_RUN_ID/model"
           export IMAGE_NAME="${{ secrets.DOCKERHUB_USERNAME }}/pcos-model:$LATEST_RUN_ID"
@@ -54,7 +55,8 @@ jobs:
           echo "Akan membuat dan push image dengan nama: $IMAGE_NAME"
 
           echo "--- Membangun Docker Image (MLflow Models) ---"
-          mlflow models build-docker -m "$MODEL_URI" -n "$IMAGE_NAME" --enable-mlserver
+          # Tambahkan --verbose agar kita bisa melihat error build Docker
+          mlflow models build-docker -m "$MODEL_URI" -n "$IMAGE_NAME" --enable-mlserver --verbose
 
           echo "--- Mendorong (Push) Docker Image ke Docker Hub ---"
           docker push "$IMAGE_NAME"
