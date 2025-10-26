@@ -1,18 +1,13 @@
 name: workflow-ci
 channels:
-  - conda-forge  # Channel utama, punya hampir semua paket
+  - conda-forge  
   - defaults
 dependencies:
-  # 1. Tentukan versi Python
   - python=3.10
-  
-  # 2. Instal paket-paket ini dari Conda
   - pip
   - pandas
   - scikit-learn
-  - pyyaml       # pyyaml juga ada di conda-forge
-  
-  # 3. Instal paket-paket ini menggunakan Pip (setelah conda selesai)
+  - pyyaml       
   - pip:
-    - mlflow     # Ganti dengan versi spesifik jika perlu, misal mlflow==2.9.2
-    - dagshub    # Ganti dengan versi spesifik jika perlu, misal dagshub==0.3.2
+    - mlflow     
+    - dagshub    

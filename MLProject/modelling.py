@@ -9,7 +9,8 @@ import warnings
 import joblib
 import os
 import yaml 
-import sklearn 
+import sklearn
+import shutil 
 
 warnings.filterwarnings('ignore')
 
@@ -72,8 +73,8 @@ def main():
 
         # 3. Buat file MLmodel secara manual
         sklearn_version = sklearn.__version__
-        conda_env_path = "../conda.yaml"
-        python_version = "3.12.1" 
+        conda_env_path = "conda.yaml"
+        python_version = "3.10" 
 
         # Konten untuk file MLmodel
         mlmodel_dict = {
@@ -100,6 +101,16 @@ def main():
             yaml.dump(mlmodel_dict, f, default_flow_style=False)
 
         # 4. Log SELURUH DIREKTORI sebagai artefak
+        print("Menyalin model_conda.yaml ke direktori artefak...")
+        try:
+            shutil.copyfile(
+                "model_conda.yaml", 
+                os.path.join(model_artifact_dir, "conda.yaml")
+            )
+        except FileNotFoundError:
+            print("Error: Pastikan 'model_conda.yaml' ada di folder MLProject/", file=sys.stderr)
+            sys.exit(1)
+
         mlflow.log_artifacts(model_artifact_dir, artifact_path="model")
 
         print("Artefak model manual berhasil di-log ke 'model'.")
