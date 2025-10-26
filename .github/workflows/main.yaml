@@ -31,7 +31,7 @@ jobs:
         working-directory: ./MLProject 
         run: |
           # Jalankan proyek di direktori saat ini ('.')
-          # Ini akan menggunakan environment 'workflow-ci' yang sudah aktif
+          # Gunakan --env-manager local agar memakai env 'workflow-ci' yang sudah aktif
           mlflow run . --env-manager local
           
       - name: Build and Push Docker Image
@@ -46,7 +46,7 @@ jobs:
           echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
 
           echo "--- Reading Run ID ---"
-          # modelling.py menyimpan ini di root (../)
+          # modelling.py menyimpan ini di root (../), jadi 'cat run_id.txt' sudah benar
           export LATEST_RUN_ID=$(cat run_id.txt) 
           echo "Menggunakan Run ID: $LATEST_RUN_ID"
           export MODEL_URI="runs:/$LATEST_RUN_ID/model"
@@ -55,11 +55,12 @@ jobs:
           echo "Akan membuat dan push image dengan nama: $IMAGE_NAME"
 
           echo "--- Membangun Docker Image (MLflow Models) ---"
-          # Tambahkan --verbose agar kita bisa melihat error build Docker
-          mlflow models build-docker -m "$MODEL_URI" -n "$IMAGE_NAME" --enable-mlserver --verbose
+          # --verbose dihapus karena menyebabkan error
+          mlflow models build-docker -m "$MODEL_URI" -n "$IMAGE_NAME" --enable-mlserver
 
           echo "--- Mendorong (Push) Docker Image ke Docker Hub ---"
           docker push "$IMAGE_NAME"
 
           echo "--- Menyimpan nama image untuk langkah selanjutnya (jika ada) ---"
           echo "$IMAGE_NAME" > image_name.txt
+
