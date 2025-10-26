@@ -32,7 +32,7 @@ jobs:
           MLFLOW_TRACKING_PASSWORD: ${{ secrets.DAGSHUB_PASSWORD }}
           
         run: |
-          mlflow run MLProject
+          mlflow run MLProject . --no-conda
 
       - name: Build and Push Docker Image
         shell: bash -l {0}
