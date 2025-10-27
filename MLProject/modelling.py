@@ -87,7 +87,7 @@ def main():
                 },
                 'sklearn': {
                     'pickled_model': 'model.pkl',
-                    'serialization_format': 'joblib',
+                    'serialization_format': 'cloudpickle',
                     'sklearn_version': sklearn_version
                 }
             },
