@@ -10,4 +10,5 @@ dependencies:
   - pyyaml       
   - pip:
     - mlflow     
-    - dagshub    
+    - dagshub
+    - cloudpickle
