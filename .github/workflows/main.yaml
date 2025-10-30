@@ -41,7 +41,7 @@ jobs:
 
         run: |
           echo "--- Logging in to Docker Hub ---"
-          echo ${{ secrets.DAGSHUB_PASSWORD }} | docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+          echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
 
           echo "--- Reading Run ID ---"
           export LATEST_RUN_ID=$(cat run_id.txt) 
