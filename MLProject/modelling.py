@@ -106,7 +106,7 @@ def main():
     # --- Path yang Lebih Robust ---
     script_dir = os.path.dirname(os.path.abspath(__file__))
     DATA_PATH = os.path.join(script_dir, "PCOS_preprocessing.csv")
-    SERVING_ENV_PATH_SOURCE = os.path.join(script_dir, "..", "model_env.yaml")
+    SERVING_ENV_PATH_SOURCE = os.path.join(script_dir, "..", "conda.yaml")
     # ---------------------------------
     SERVING_ENV_PATH_DEST = "conda.yaml"
 
@@ -268,9 +268,23 @@ def main():
                     shutil.rmtree(model_artifact_dir)
                     # --- AKHIR PEMBUATAN MANUAL ---
 
+                    # Simpan model ke folder lokal untuk Docker
+                    local_model_path = f"./saved_models/{run_name}"
+                    os.makedirs(local_model_path, exist_ok=True)
+
+                    mlflow.sklearn.save_model(
+                        sk_model=model,
+                        path=local_model_path,
+                        conda_env=SERVING_ENV_PATH_SOURCE,  # Pastikan ini file conda.yaml yang valid
+                        signature=signature
+                    )
+                    print(f"Model disimpan secara lokal di: {os.path.abspath(local_model_path)}")
+                    # -------------------------------------------------------------
+
                     print(f"Selesai {run_name}.")
 
         print(f"\nSemua eksperimen tuning selesai. Parent Run ID: {parent_run.info.run_id}")
+        
 
 if __name__ == "__main__":
     main()
