@@ -59,4 +59,3 @@ jobs:
 
           echo "--- Menyimpan nama image untuk langkah selanjutnya (jika ada) ---"
           echo "$IMAGE_NAME" > image_name.txt
-
