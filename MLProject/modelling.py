@@ -7,9 +7,6 @@ from sklearn.metrics import (
     confusion_matrix, ConfusionMatrixDisplay
 )
 from sklearn.ensemble import RandomForestClassifier
-# Import model-model lain jika Anda ingin melatihnya juga
-# from sklearn.linear_model import LogisticRegression
-# from sklearn.svm import SVC
 import sys
 import warnings
 import joblib
