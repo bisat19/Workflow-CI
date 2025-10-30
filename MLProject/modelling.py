@@ -15,8 +15,9 @@ import dagshub
 import matplotlib.pyplot as plt
 import numpy as np
 
-# --- Inisialisasi DagsHub (opsional, aktifkan jika perlu) ---
-# dagshub.init(repo_owner='bisat19', repo_name='Membangun_model', mlflow=True)
+# --- Inisialisasi DagsHub untuk tracking eksperimen (opsional) ---
+# Hanya untuk log parameter & metrik, BUKAN untuk model
+dagshub.init(repo_owner='bisat19', repo_name='Membangun_model', mlflow=True)
 
 warnings.filterwarnings('ignore')
 
@@ -81,7 +82,7 @@ def log_confusion_matrix(y_test, y_pred, run_name):
 def main():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     DATA_PATH = os.path.join(script_dir, "PCOS_preprocessing.csv")
-    CONDA_ENV_PATH = os.path.join(script_dir, "..", "model_env.yaml")  # Harus ada!
+    CONDA_ENV_PATH = os.path.join(script_dir, "..", "model_env.yaml")
 
     print("Memuat data...")
     data = load_data(DATA_PATH)
@@ -118,7 +119,7 @@ def main():
         y_pred = model.predict(X_test)
         y_pred_proba = model.predict_proba(X_test)
 
-        # Log parameter & metrik
+        # Log parameter & metrik ke DagsHub
         metrics = eval_metrics(y_test, y_pred, y_pred_proba)
         mlflow.log_params(params)
         mlflow.log_metrics(metrics)
@@ -127,24 +128,30 @@ def main():
         # Log confusion matrix
         log_confusion_matrix(y_test, y_pred, run_name)
 
-        # --- ✅ LOG MODEL SECARA OTOMATIS (INI YANG PENTING!) ---
+        # === SIMPAN MODEL SECARA LOKAL (BUKAN KE DAGSHUB) ===
+        # Nonaktifkan tracking URI sementara untuk penyimpanan model
+        local_tracking_uri = "./mlruns"  # default lokal
+        current_uri = mlflow.get_tracking_uri()
+
+        # Simpan model ke filesystem lokal
         signature = mlflow.models.infer_signature(X_train, model.predict(X_train))
         
-        # Pastikan file model_env.yaml ada di direktori induk
         if not os.path.exists(CONDA_ENV_PATH):
-            print(f"Peringatan: {CONDA_ENV_PATH} tidak ditemukan. Model akan disimpan tanpa conda_env.", file=sys.stderr)
-            conda_env = None
-        else:
-            conda_env = CONDA_ENV_PATH
+            print(f"ERROR: {CONDA_ENV_PATH} tidak ditemukan. Pastikan file ini ada!", file=sys.stderr)
+            sys.exit(1)
 
-        mlflow.sklearn.log_model(
-            sk_model=model,
-            artifact_path="model",
-            conda_env=conda_env,
-            signature=signature,
-            registered_model_name=None  # opsional
+        # Simpan model ke folder lokal
+        saved_model_path = "saved_model"
+        mlflow.sklearn.save_model(
+            model,
+            path="saved_model",  
+            conda_env="../model_env.yaml",
+            signature=signature
         )
-        print("Model berhasil di-log ke MLflow dengan lingkungan yang aman.")
+        print(f"Model disimpan secara lokal di: {os.path.abspath(saved_model_path)}")
+
+        # Opsional: log folder model sebagai artefak ke DagsHub (hanya metadata, bukan untuk serve)
+        mlflow.log_artifacts(saved_model_path, artifact_path="model_artifacts")
 
         # Simpan run_id
         with open("../run_id.txt", "w") as f:
