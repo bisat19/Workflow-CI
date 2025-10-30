@@ -11,4 +11,5 @@ dependencies:
   - matplotlib
   - pip:
     - mlflow>=2.14.0
+    - dagshub 
     - cloudpickle==2.2.1
