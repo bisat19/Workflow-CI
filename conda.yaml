@@ -11,4 +11,4 @@ dependencies:
   - pip:
     - mlflow     
     - dagshub
-    - cloudpickle
+    - cloudpickle=2.2.1
