@@ -18,11 +18,11 @@ import dagshub  # <-- DITAMBAHKAN
 import matplotlib.pyplot as plt # <-- DITAMBAHKAN
 import numpy as np # <-- DITAMBAHKAN
 
-# --- Inisialisasi DagsHub ---
-dagshub.init(repo_owner='bisat19',
-             repo_name='Membangun_model',
-             mlflow=True)
-# -----------------------------
+# # --- Inisialisasi DagsHub ---
+# dagshub.init(repo_owner='bisat19',
+#              repo_name='Membangun_model',
+#              mlflow=True)
+# # -----------------------------
 
 warnings.filterwarnings('ignore')
 
